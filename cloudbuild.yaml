@@ -26,3 +26,5 @@ images:
 
 timeout: 2000s
 tags: ['cloud-builders-community']
+options:
+  logging: CLOUD_LOGGING_ONLY
