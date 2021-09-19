@@ -8,3 +8,7 @@ steps:
 - name: gcr.io/cloud-builders/gsutil
   args: ['cp', 'cache.zip', 'gs://gradle_cache_$PROJECT_ID/cache.zip']
   
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
