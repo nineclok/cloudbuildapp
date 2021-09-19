@@ -1,3 +1,6 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
 - name: gcr.io/cloud-builders/gsutil
   # we use rsync and not cp so that the step does not fail the first time it is run
@@ -7,7 +10,3 @@ steps:
   args: ['-g', '.gradle', 'assemble']
 - name: gcr.io/cloud-builders/gsutil
   args: ['cp', 'cache.zip', 'gs://gradle_cache_$PROJECT_ID/cache.zip']
-  
-options:
-  logging: CLOUD_LOGGING_ONLY
-  
