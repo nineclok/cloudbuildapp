@@ -1,26 +1,31 @@
 steps:
-# Set a persistent volume according to https://cloud.google.com/cloud-build/docs/build-config (search for volumes)
-- name: 'ubuntu'
-  volumes:
-  - name: 'vol1'
-    path: '/persistent_volume'
-  args: ['cp', '-a', '.', '/persistent_volume']
-  
-# Build APK with Gradle Image from mounted /persistent_volume using name: vol1
-- name: 'gcr.io/cloud-builders/docker'
-  volumes:
-  - name: 'vol1'
-    path: '/persistent_volume'
-  args: ['run', '-v', 'vol1:/home/app', '--rm', 'gcr.io/fullstackgcp/gradle', '/bin/sh', '-c', 'cd /home/app && ./gradlew clean assembleDebug']
+- name: gcr.io/cloud-builders/docker
+  id: 'cloudbuild-android'
+  env:
+    - 'BUILD=$BUILD_ID'
+    - 'PROJECT=$PROJECT_ID'
+    - 'REV=$REVISION_ID'
+  args: [
+    'build',
+    '-t', 'eu.gcr.io/$PROJECT_ID/cloudbuild-android:${SHORT_SHA}',
+    '-t', 'eu.gcr.io/$PROJECT_ID/cloudbuild-android:latest',
 
-# Push the APK Output from vol1 to your GCS Bucket with Short Commit SHA.
-- name: 'gcr.io/cloud-builders/gsutil'
-  volumes:
-  - name: 'vol1'
-    path: '/persistent_volume'
-  args: ['cp', '/persistent_volume/app/build/outputs/apk/debug/app-debug.apk', 'gs://fullstackgcp-apk-builds/app-debug-$SHORT_SHA.apk']
+    # These are used by Cloud Build variable substitutions (as shown in screenshot_01.png):
+    # https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
+    #'--build-arg', 'ANDROID_SDK_PACKAGES="${_ANDROID_SDK_PACKAGES"}',
+    #'--build-arg', 'GRADLE_WRAPPER_VERSION=${_GRADLE_WRAPPER_VERSION}',
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+    # By default, static values are being used (build-trigger configuration not required)
+    # When commenting these out, one has to run `./gradlew build` to fetch components
+    # '--build-arg', 'ANDROID_SDK_PACKAGES=platform-tools platforms;android-30 build-tools;30.0.3 ndk;21.3.6528147',
+    '--build-arg', 'ANDROID_SDK_PACKAGES=platform-tools platforms;android-30 build-tools;30.0.3',
+    '--build-arg', 'GRADLE_WRAPPER_VERSION=7.1.1',
 
-timeout: 1200s
+    # enable cloudbuild network
+    '--network', 'cloudbuild',
+    '.'
+  ]
+
+images:
+- 'eu.gcr.io/$PROJECT_ID/cloudbuild-android:${SHORT_SHA}'
+- 'eu.gcr.io/$PROJECT_ID/cloudbuild-android:latest'
