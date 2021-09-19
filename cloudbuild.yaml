@@ -20,13 +20,13 @@ steps:
   - '--cache-from'
   - 'gcr.io/$PROJECT_ID/android:base'
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
 images:
   - 'gcr.io/$PROJECT_ID/android:base'
   - 'gcr.io/$PROJECT_ID/android:${_ANDROID_VERSION}'
 
-options:
-  logging: CLOUD_LOGGING_ONLY
-  
 timeout: 2000s
 tags: ['cloud-builders-community']
 
