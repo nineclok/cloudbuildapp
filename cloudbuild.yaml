@@ -3,14 +3,14 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '--tag=gcr.io/com.android.application/android:base'
+  - '--tag=gcr.io/com.picker.cloudbuildapp/android:base'
   - '--file=Dockerfile-base'
   - '.'
 
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '--tag=gcr.io/com.android.application/android:30'
+  - '--tag=gcr.io/com.picker.cloudbuildapp/android:30'
   - '--build-arg'
   - 'android_version=30'
   - '--build-arg'
@@ -18,14 +18,14 @@ steps:
   - '--file=Dockerfile-sdk'
   - '.'
   - '--cache-from'
-  - 'gcr.io/com.android.application/android:base'
+  - 'gcr.io/com.picker.cloudbuildapp/android:base'
 
 options:
   logging: CLOUD_LOGGING_ONLY
   
 images:
-  - 'gcr.io/com.android.application/android:base'
-  - 'gcr.io/com.android.application/android:30'
+  - 'gcr.io/com.picker.cloudbuildapp/android:base'
+  - 'gcr.io/com.picker.cloudbuildapp/android:30'
 
 timeout: 2000s
 tags: ['cloud-builders-community']
